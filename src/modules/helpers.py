@@ -66,8 +66,20 @@ def parse_first_10_bytes(data, next_block):
     TYPE = data[0:2]
     CLASS = data[2:4]
     TTL = data[4:8]
+
     RDLENGTH = data[8:10]
     data_length = ord(RDLENGTH[0:1]) + ord(RDLENGTH[1:2])
     RDATA = data[10:10 + data_length]
     next_block += data_length
     return NAME, next_block, data, TYPE, CLASS, TTL, RDLENGTH, data_length, RDATA
+
+
+def convert_byte_to_bit(byte):
+    """ Convert a byte to a bit """
+    n = len(byte)
+    result = []
+    for i in range(0, 8 - n):
+        result.append(0)
+    for i in range(0, n):
+        result.append(byte[i])
+    return result

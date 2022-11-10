@@ -7,8 +7,6 @@ def main():
     args = parser.parse_args()
     print(args)
     try:
-        # with Router(args.ip, args.port) as router:
-        #     router.start()
         router = Router(args.ip, args.port)
         router.start()
     except KeyboardInterrupt:

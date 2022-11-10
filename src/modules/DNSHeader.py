@@ -1,3 +1,5 @@
+from src.modules.helpers import convert_byte_to_bit
+
 """
                                     1  1  1  1  1  1
       0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
@@ -19,6 +21,7 @@
 
 class DNSHeader:
     def __init__(self):
+        """ Initializes the Header """
         self.ID = None         # 2 bytes - 16 bits identifier
         # FLAGS
         self.QR = None         # 1 bit - 0 - query, 1 - response
@@ -40,14 +43,16 @@ class DNSHeader:
         self.header = None
 
     def extract_headers(self, data):
+        """ Extracts the headers from the DNS packet """
         self.ID = data[0:2]
         self.extract_flags(data[2:4])
         self.extract_counters(data[4:12])
         self.create_bytes_header()
 
     def extract_flags(self, flags):
-        byte1 = self.convert_byte_to_bit(bin(ord(flags[:1])).lstrip('0b'))
-        byte2 = self.convert_byte_to_bit(bin(ord(flags[1:2])).lstrip('0b'))
+        """ Extracts the flags from the DNS packet """
+        byte1 = convert_byte_to_bit(bin(ord(flags[:1])).lstrip('0b'))
+        byte2 = convert_byte_to_bit(bin(ord(flags[1:2])).lstrip('0b'))
 
         self.QR = str(byte1[0])
         self.OPCODE = ''
@@ -64,27 +69,20 @@ class DNSHeader:
         for bit in byte2[4:8]:
             self.RCODE += str(bit)
 
-    @staticmethod
-    def convert_byte_to_bit(byte):
-        n = len(byte)
-        result = []
-        for i in range(0, 8 - n):
-            result.append(0)
-        for i in range(0, n):
-            result.append(byte[i])
-        return result
-
     def extract_counters(self, counters):
+        """ Extracts the counters from the DNS packet """
         self.QDCOUNT = counters[0:2]
         self.ANCOUNT = counters[2:4]
         self.NSCOUNT = counters[4:6]
         self.ARCOUNT = counters[6:8]
 
     def convert_flags(self):
+        """ Converts the flags to bytes """
         return int(self.QR + self.OPCODE + self.AA + self.TC + self.RD, 2).to_bytes(1, byteorder='big') + \
-           int(self.RA + self.Z + self.RCODE, 2).to_bytes(1, byteorder='big')
+               int(self.RA + self.Z + self.RCODE, 2).to_bytes(1, byteorder='big')
 
     def create_bytes_header(self):
+        """ Creates the bytes header """
         self.header = b''
         self.header += self.ID
         self.header += self.convert_flags()
@@ -106,4 +104,9 @@ class DNSHeader:
         return ord(self.ARCOUNT[:1]) + ord(self.ARCOUNT[1:2])
 
     def get_header(self):
+        """ Returns the header of the DNS packet """
         return self.header
+
+    def get_id(self):
+        """ Returns the ID of the DNS packet """
+        return self.ID

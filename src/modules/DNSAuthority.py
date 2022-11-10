@@ -49,4 +49,5 @@ class DNSAuthority:
                                               self.TTL, self.RDLENGTH, self.RDATA)
 
     def get_authority_section(self):
+        """ Returns the authority section """
         return self.authority_section

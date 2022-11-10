@@ -51,7 +51,6 @@ class DNSAdditional:
 
         if data_length == 4:
             self.domain = get_ipv4_addr(data[10:10 + data_length])
-            print(self.domain)
 
         self.additional_section = create_bytes(self.NAME, self.TYPE, self.CLASS,
                                                self.TTL, self.RDLENGTH, self.RDATA)
@@ -61,4 +60,5 @@ class DNSAdditional:
         self.additional_section = b'' + rawdata
 
     def get_additional_section(self):
+        """ Returns the additional section """
         return self.additional_section

@@ -53,4 +53,9 @@ class DNSAnswer:
                                            self.TTL, self.RDLENGTH, self.RDATA)
 
     def get_answer_section(self):
+        """ Returns the answer section """
         return self.answer_section
+
+    def get_time_to_live(self):
+        """ Returns the time to live """
+        return self.TTL

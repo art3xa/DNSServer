@@ -69,9 +69,16 @@ class DNSMessage:
         self.authority = None
         self.additional = None
 
+        self.Id = None
+        self.Name = None
+        self.TTL = None
+        self.type = None
+
     def initialize_message(self, data):
         self.header = DNSHeader()
         self.header.extract_headers(data[:12])
+
+        self.Id = self.header.get_id()
 
         # Question section
         amount_questions = self.header.get_qdcount()
@@ -96,6 +103,8 @@ class DNSMessage:
         for _ in range(n):
             question = DNSQuestion()
             question.extract_question(data[pointer:])
+            self.Name = question.get_name_domain()
+            self.type = question.get_type()
             pointer += question.nextblock
             self.questions.append(question)
         return pointer
@@ -108,6 +117,8 @@ class DNSMessage:
         for _ in range(n):
             answer = DNSAnswer()
             answer.extract_answer(data[pointer:])
+            if self.TTL is None:
+                self.TTL = answer.get_time_to_live()
             pointer += answer.next_block
             self.answers.append(answer)
         return pointer
@@ -177,3 +188,10 @@ class DNSMessage:
                 message += self.additional[i].get_additional_section()
 
         return message
+
+    def get_name_dom(self):
+        """ Returns the question """
+        return self.Name, self.Id, self.TTL
+
+    def get_type(self):
+        return self.type
